@@ -1,10 +1,15 @@
+import { Layout } from './components/Layout';
 import { AccountSummary } from './features/dashboard/components/AccountSummary';
+import { AccountList } from './features/accounts/components/AccountList';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50 p-10 flex justify-center items-start">
-      <AccountSummary />
-    </div>
+    <Layout>
+      <div className="flex gap-6 items-start">
+        <AccountSummary />
+      </div>
+      <AccountList />
+    </Layout>
   )
 }
 

@@ -7,10 +7,15 @@ export function useAccounts() {
 
   useEffect(() => {
     getAccounts()
-      .then((data) => setAccounts(data))
+      .then((data) => {
+        console.log("DADOS QUE CHEGARAM DA API:", data); 
+        setAccounts(data);
+      })
       .catch((error) => console.error("Erro ao buscar contas:", error))
       .finally(() => setIsLoading(false));
   }, []);
+
+  console.log("contas no react:", accounts);
 
   const totalBalance = accounts.reduce((acc, account) => acc + Number(account.balance), 0);
 
