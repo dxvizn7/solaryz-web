@@ -1,27 +1,25 @@
+import { SummaryCard } from '../../../../components/SummaryCard'; 
+import { AccountList } from '../../../accounts/components/AccountList';
 import { Wallet } from 'lucide-react';
-import * as S from './styles';
-import { useAccounts } from '../../../accounts/hooks/useAccounts';
+import { useSummary } from '../../hooks/useSummary';
 
 export function AccountSummary() {
-  const { totalBalance, isLoading } = useAccounts();
-
-  const formattedBalance = new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(totalBalance);
+  const { totalBalance } = useSummary(); 
 
   return (
-    <div className={S.card}>
-      <div className={S.header}>
-        <Wallet size={20} className="text-blue-500" />
-        <span>Saldo Total</span>
-      </div>
-      
-      <h1 className={S.balance}>
-        {isLoading ? 'Carregando...' : formattedBalance}
-      </h1> 
-      
-      <span className={S.updateText}>Atualizado agora mesmo</span>
+    <div className="flex flex-col gap-10 mt-6">
+      <section>
+        <SummaryCard
+          title="Saldo Total"
+          value={totalBalance}
+          subtitle="Atualizado agora mesmo"
+          icon={<Wallet size={20} />}
+        />
+      </section>
+
+      <section>
+        <AccountList />
+      </section>
     </div>
   );
 }
