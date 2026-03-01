@@ -10,7 +10,7 @@ export function Sidebar() {
           S
         </div>
         <span className="text-xl font-bold tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-          SolariZ
+          SolaryZ
         </span>
       </div>
 
