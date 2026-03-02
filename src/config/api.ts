@@ -9,8 +9,10 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = "4|kfNsILM4XtuoYbXO8sZmjPERPPJkE4o2suaqcJ6I6c816fa0"; 
+  // Busca o token gerado dinamicamente do localStorage
+  const token = localStorage.getItem('@SolaryZ:token'); 
 
+  // Se ele existir (ou seja, se o usuário estiver logado), anexa na requisição
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
