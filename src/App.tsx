@@ -5,12 +5,20 @@ import { AccountSummary } from './features/dashboard/components/AccountSummary';
 import { LoginForm } from './features/auth/components/Login';
 import { RegisterForm } from './features/auth/components/Register';
 import type { JSX } from 'react';
+import { PluggyConnectButton } from './features/accounts/components/PluggyConnect';
 
 function Dashboard() {
   return (
     <Layout>
-      <div className="flex gap-6 items-start">
-        <AccountSummary />
+      <div className="flex flex-col gap-6 items-start">
+        <div className="flex justify-between w-full items-center">
+          <h1 className="text-2xl font-bold">Resumo Financeiro</h1>
+          <PluggyConnectButton />
+        </div>
+        
+        <div className="flex gap-6 items-start">
+          <AccountSummary />
+        </div>
       </div>
     </Layout>
   );
