@@ -13,7 +13,7 @@ export function Header({ title }: HeaderProps) {
   const firstName = user?.name ? user.name.split(' ')[0] : '';
 
   return (
-    <header className="h-20 bg-solar-dark border-b border-gray-100 flex items-center justify-between px-8">
+    <header className="h-20 bg-solar-dark border-b border-white/5 flex items-center justify-between px-8">
       <h1 className="text-2xl font-bold bg-gradient-to-r from-solar-orange to-solar-yellow bg-clip-text text-transparent">
         {title}
       </h1>
