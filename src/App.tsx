@@ -12,8 +12,9 @@ function Dashboard() {
     <Layout>
       <div className="flex flex-col gap-6 items-start">
         <div className="flex justify-between w-full items-center">
-          <h1 className="text-2xl font-bold">Resumo Financeiro</h1>
-          <PluggyConnectButton />
+          <div className="flex items-right">
+           {/* <PluggyConnectButton  /> */}
+          </div>
         </div>
         
         <div className="flex gap-6 items-start">

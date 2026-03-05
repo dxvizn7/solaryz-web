@@ -15,7 +15,7 @@ export function SummaryCard({ title, value, subtitle, icon }: SummaryCardProps) 
   }).format(value);
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-3 w-full max-w-sm">
+    <div className="bg-gradient-to-r from-solar-orange to-solar-yellow border border-white p-6 rounded-3xl">
       <div className="flex items-center gap-2 text-solar-orange font-medium text-sm">
         {icon || <Wallet size={20} />}
         <span className="text-gray-600">{title}</span>

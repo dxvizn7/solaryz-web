@@ -7,7 +7,7 @@ export function AccountSummary() {
   const { totalBalance } = useSummary(); 
 
   return (
-    <div className="flex flex-col gap-10 mt-6">
+    <div className="flex flex-col gap-10 mt-6 items-left">
       <section>
         <SummaryCard
           title="Saldo Total"
