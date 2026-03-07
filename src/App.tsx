@@ -1,37 +1,40 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './features/auth/contexts/AuthContext';
 import { Layout } from './components/Layout';
-import { AccountSummary } from './features/dashboard/components/AccountSummary';
+import { BalanceSummary } from './features/dashboard/components/BalanceSummary';
 import { LoginForm } from './features/auth/components/Login';
 import { RegisterForm } from './features/auth/components/Register';
 import type { JSX } from 'react';
-import { PluggyConnectButton } from './features/accounts/components/PluggyConnect';
+import { Onboarding } from './features/onboarding/pages/Onboarding';
 
 function Dashboard() {
   return (
     <Layout>
       <div className="flex flex-col gap-6 items-start">
-        <div className="flex justify-between w-full items-center">
-          <div className="flex items-right">
-           {/* <PluggyConnectButton  /> */}
-          </div>
-        </div>
-        
         <div className="flex gap-6 items-start">
-          <AccountSummary />
+          <BalanceSummary />
         </div>
       </div>
     </Layout>
   );
 }
 
-function PrivateRoute({ children }: { children: JSX.Element }) {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+function RequireConnection({ children }: { children: JSX.Element }) {
+  const { isAuthenticated, user } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user && !user.has_connected_account) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  return children;
 }
 
 function AppRoutes() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   return (
     <Routes>
@@ -39,11 +42,20 @@ function AppRoutes() {
       <Route path="/register" element={<RegisterForm />} />
 
       <Route 
+        path="/onboarding" 
+        element={
+          isAuthenticated && user && !user.has_connected_account 
+            ? <Onboarding /> 
+            : <Navigate to="/dashboard" replace />
+        } 
+      />
+
+      <Route 
         path="/dashboard" 
         element={
-          <PrivateRoute>
+          <RequireConnection>
             <Dashboard />
-          </PrivateRoute>
+          </RequireConnection>
         } 
       />
 
@@ -58,7 +70,6 @@ function AppRoutes() {
 function App() {
   return (
     <BrowserRouter>
-      {/* O AuthProvider abraça tudo para fornecer o estado */}
       <AuthProvider>
         <AppRoutes />
       </AuthProvider>

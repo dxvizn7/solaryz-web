@@ -8,25 +8,25 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  has_connected_account: boolean;
 }
 
 interface AuthContextData {
   isAuthenticated: boolean;
-  user: User | null; // 2. Adicionamos o usuário no contexto
+  user: User | null;
   login: (data: LoginData) => Promise<void>;
   logout: () => void;
+  updateUser: (userData: User) => void;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Estado do Token
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     const token = localStorage.getItem('@SolaryZ:token');
     return !!token;
   });
 
-  // 3. Estado do Usuário: já tenta buscar do localStorage quando carrega
   const [user, setUser] = useState<User | null>(() => {
     const storedUser = localStorage.getItem('@SolaryZ:user');
     if (storedUser) {
@@ -39,29 +39,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const response = await api.post('/login', data);
     
     const token = response.data.access_token;
-    const userData = response.data.user; // 4. Pegamos o objeto user que a API devolve
+    const userData = response.data.user; 
 
     if (token && userData) {
-      // Salva o token
       localStorage.setItem('@SolaryZ:token', token);
       setIsAuthenticated(true);
-
-      // Salva os dados do usuário convertendo para texto (JSON.stringify)
       localStorage.setItem('@SolaryZ:user', JSON.stringify(userData));
       setUser(userData);
     }
   };
 
   const logout = () => {
-    // Limpa tudo na hora de sair
     localStorage.removeItem('@SolaryZ:token');
     localStorage.removeItem('@SolaryZ:user');
     setIsAuthenticated(false);
     setUser(null);
   };
 
+  // 3. Função para atualizar os dados do usuário logado (muito útil pós-Pluggy)
+  const updateUser = (userData: User) => {
+    localStorage.setItem('@SolaryZ:user', JSON.stringify(userData));
+    setUser(userData);
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
