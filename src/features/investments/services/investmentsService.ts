@@ -13,6 +13,7 @@ export interface Investment {
   status: string | null;
   institution: string | null;
   due_date: string | null;
+  quantity: number| null;
 }
 
 export async function getInvestments(): Promise<Investment[]> {
