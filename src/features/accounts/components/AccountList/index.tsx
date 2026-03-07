@@ -1,12 +1,12 @@
 import * as S from './styles';
-import { useAccounts } from '../../hooks/useAccounts';
+import type { Account } from '../../services/accountsService';
 import { AccountCard } from '../AccountCard';
 
-export function AccountList() {
-  const { accounts, isLoading } = useAccounts();
+interface Props {
+  accounts: Account[];
+}
 
-  if (isLoading) return null;
-
+export function AccountList({ accounts }: Props) {
   return (
     <div className={S.container}>
       <h2 className={S.title}>Minhas Contas</h2>
