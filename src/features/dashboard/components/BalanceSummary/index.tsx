@@ -5,6 +5,8 @@ import { useInvestments } from '../../../investments/hooks/useInvestments';
 import { useTransactionSummary } from '../../../transactions/hooks/useTransactionSummary';
 import { AccountList } from '../../../accounts/components/AccountList';
 import { InvestmentList } from '../../../investments/components/InvestmentList';
+// IMPORTANTE: Ajuste o caminho abaixo para onde você salvou o botão
+import { PluggyConnectButton } from '../../../accounts/components/PluggyConnect'; 
 
 type ActiveView = 'balance' | 'investments';
 
@@ -22,30 +24,44 @@ export function BalanceSummary() {
 
   return (
     <div className="flex flex-col gap-8 mt-6 w-full">
-      {/* Toggle */}
-      <div className="flex gap-2">
-        <button
-          onClick={() => setActiveView('balance')}
-          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-            isBalance
-              ? 'bg-solar-orange text-white shadow-md'
-              : 'bg-white/10 text-gray-400 hover:bg-white/20'
-          }`}
-        >
-          <Wallet size={14} />
-          Saldo
-        </button>
-        <button
-          onClick={() => setActiveView('investments')}
-          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-            !isBalance
-              ? 'bg-solar-orange text-white shadow-md'
-              : 'bg-white/10 text-gray-400 hover:bg-white/20'
-          }`}
-        >
-          <TrendingUp size={14} />
-          Investimentos
-        </button>
+      {/* Cabeçalho com Toggles na esquerda e Botão de Conectar na direita */}
+      <div className="flex justify-between items-center w-full">
+        
+        {/* Toggles (Saldo / Investimentos) */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setActiveView('balance')}
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+              isBalance
+                ? 'bg-solar-orange text-white shadow-md'
+                : 'bg-white/10 text-gray-400 hover:bg-white/20'
+            }`}
+          >
+            <Wallet size={14} />
+            Saldo
+          </button>
+          <button
+            onClick={() => setActiveView('investments')}
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+              !isBalance
+                ? 'bg-solar-orange text-white shadow-md'
+                : 'bg-white/10 text-gray-400 hover:bg-white/20'
+            }`}
+          >
+            <TrendingUp size={14} />
+            Investimentos
+          </button>
+        </div>
+
+        {/* Botão de Nova Conta - Só aparece se estiver na aba de Saldo */}
+        {isBalance && (
+          <PluggyConnectButton 
+            variant="dashboard" 
+            // Como ainda não temos uma função de refetch específica aqui, 
+            // não passamos o onSuccessCallback, assim ele usará o navigate(0) 
+            // nativo do componente para dar o refresh na tela.
+          />
+        )}
       </div>
 
       {/* Card principal */}
