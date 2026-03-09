@@ -1,0 +1,18 @@
+export type AlertLevel = 'none' | 'warning' | 'critical';
+
+export interface CategoryExpense {
+  category_id: string;
+  name: string;
+  spent: number;
+  budget: number;
+  percentage: number;
+  color_class: string;
+  alert_level: AlertLevel;
+}
+
+export interface CategoryBudget {
+  id: string;
+  category_name: string;
+  budget_limit: number;
+  alert_threshold: number;
+}
