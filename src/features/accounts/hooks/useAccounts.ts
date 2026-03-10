@@ -15,8 +15,6 @@ export function useAccounts() {
       .finally(() => setIsLoading(false));
   }, []);
 
-  console.log("contas no react:", accounts);
-
   const totalBalance = accounts.reduce((acc, account) => acc + Number(account.balance), 0);
 
   return { accounts, totalBalance, isLoading };
