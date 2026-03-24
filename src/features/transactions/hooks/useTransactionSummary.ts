@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '../../../config/api';
 
 interface TransactionSummary {
@@ -7,23 +7,20 @@ interface TransactionSummary {
 }
 
 export function useTransactionSummary() {
-  const [summary, setSummary] = useState<TransactionSummary>({ income: 0, expense: 0 });
-  const [isLoading, setIsLoading] = useState(true);
-
-  const fetchSummary = useCallback(async () => {
-    try {
+  const { 
+    data: summary = { income: 0, expense: 0 }, 
+    isLoading, 
+    isRefetching, 
+    refetch 
+  } = useQuery({
+    queryKey: ['transactionSummary'],
+    queryFn: async () => {
       const response = await api.get('/transactions/summary');
-      setSummary(response.data);
-    } catch (error) {
-      console.error('Erro ao buscar resumo de transações:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+      return response.data as TransactionSummary;
+    },
+    refetchInterval: 30000, // Atualiza sozinho a cada 30s
+    staleTime: 10000,
+  });
 
-  useEffect(() => {
-    fetchSummary();
-  }, [fetchSummary]);
-
-  return { summary, isLoading };
+  return { summary, isLoading, isRefetching, refetch };
 }

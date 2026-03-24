@@ -1,30 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { categoryService } from '../services/categoryService';
-import type { CategoryExpense } from '../types';
 
 export function useCategoryExpenses() {
-  const [expenses, setExpenses] = useState<CategoryExpense[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { 
+    data: expenses = [], 
+    isLoading, 
+    isRefetching, 
+    error, 
+    refetch 
+  } = useQuery({
+    queryKey: ['categoryExpenses'],
+    queryFn: () => categoryService.getExpenses(),
+    refetchInterval: 30000, // Atualização automática a cada 30s
+    staleTime: 10000,
+  });
 
   const totalSpent = expenses.reduce((acc, e) => acc + e.spent, 0);
 
-  async function fetchExpenses() {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const data = await categoryService.getExpenses();
-      setExpenses(data);
-    } catch {
-      setError('Erro ao carregar gastos por categoria.');
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchExpenses();
-  }, []);
-
-  return { expenses, totalSpent, isLoading, error, refetch: fetchExpenses };
+  return { 
+    expenses, 
+    totalSpent, 
+    isLoading, 
+    isRefetching, 
+    error: error ? 'Erro ao carregar categorias' : null, 
+    refetch 
+  };
 }
