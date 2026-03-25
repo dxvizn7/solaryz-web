@@ -5,6 +5,8 @@ export interface Account {
   name: string;
   balance: number;
   currency_code: string;
+  bank_logo: string;
+  type: string;
 }
 
 export async function getAccounts(): Promise<Account[]> {
