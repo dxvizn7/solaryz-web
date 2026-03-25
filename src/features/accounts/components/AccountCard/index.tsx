@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { Building2 } from 'lucide-react'; 
-import * as S from './styles';
 
 interface AccountCardProps {
   name: string;
@@ -30,9 +29,9 @@ export function AccountCard({
   const balanceDisplay = isHidden ? 'R$\u00A0••••' : formattedBalance;
 
   const translateType = (accountType?: string) => {
-    if (accountType === 'CHECKING_ACCOUNT') return 'Conta Corrente';
-    if (accountType === 'SAVINGS_ACCOUNT') return 'Conta Poupança';
-    if (accountType === 'CREDIT_CARD') return 'Cartão de Crédito';
+    if (accountType === 'CHECKING_ACCOUNT') return 'C. Corrente';
+    if (accountType === 'SAVINGS_ACCOUNT') return 'Poupança';
+    if (accountType === 'CREDIT_CARD') return 'Cartão';
     return accountType;
   };
 
@@ -40,36 +39,31 @@ export function AccountCard({
     <img
       src={bankLogo}
       alt={`Logo ${name}`}
-      className="h-10 w-10 rounded-lg object-contain"
+      className="h-8 w-8 rounded-lg object-contain"
       loading="lazy"
       onError={(e) => {
-        // Fallback inteligente: se a imagem quebrar, esconde a tag img 
-        // e mostra a primeira letra do banco em texto!
         e.currentTarget.style.display = 'none';
-        e.currentTarget.parentElement!.innerHTML = `<span class="font-bold text-xl text-solar-orange">${name.charAt(0).toUpperCase()}</span>`;
+        e.currentTarget.parentElement!.innerHTML = `<span class="font-bold text-sm text-solar-orange">${name.charAt(0).toUpperCase()}</span>`;
       }}
     />
   ) : (
-    icon || <Building2 size={24} />
+    icon || <Building2 size={18} className="text-gray-400" />
   );
 
   return (
-    <div className={S.card}>
-      <div className="flex items-center gap-4">
-        {/* Container da logo ajustado para ficar mais premium e com fundo branco */}
-        <div className="w-12 h-12 bg-white rounded-xl text-gray-500 shadow-sm flex items-center justify-center shrink-0 p-1">
+    <div className="flex items-center justify-between py-3 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded-lg transition-colors">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0 p-1">
           {avatar}
         </div>
-        
-        <div className={S.bankInfo}>
-          <span className={S.bankName}>{name}</span>
-          <span className={S.currency}>
-            {type ? `${translateType(type)} · ` : ''}Moeda: {currencyCode}
+        <div className="flex flex-col">
+          <span className="text-white/90 text-sm font-semibold">{name}</span>
+          <span className="text-white/40 text-xs">
+            {type ? `${translateType(type)}` : currencyCode}
           </span>
         </div>
       </div>
-      
-      <span className={S.balance}>{balanceDisplay}</span>
+      <span className="text-white text-sm font-bold">{balanceDisplay}</span>
     </div>
   );
 }

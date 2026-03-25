@@ -1,4 +1,3 @@
-import * as S from './styles';
 import type { Account } from '../../services/accountsService';
 import { AccountCard } from '../AccountCard';
 
@@ -8,12 +7,15 @@ interface Props {
 }
 
 export function AccountList({ accounts, isHidden = false }: Props) {
+  const previewAccounts = accounts.slice(0, 3);
+  const hasMore = accounts.length > 3;
+
   return (
-    <div className={S.container}>
-      <h2 className={S.title}>Minhas Contas</h2>
+    <div className="bg-[#1a1a2e] rounded-2xl p-5 w-full mt-6 border border-white/5">
+      <h2 className="text-white/80 text-sm font-medium mb-4">Minhas Contas</h2>
       
-      <div className={S.list}>
-        {accounts.map((account) => (
+      <div className="flex flex-col">
+        {previewAccounts.map((account) => (
           <AccountCard 
             key={account.id}
             name={account.name}
@@ -25,6 +27,10 @@ export function AccountList({ accounts, isHidden = false }: Props) {
           />
         ))}
       </div>
+
+      <button className="w-full mt-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-white/60 hover:text-white/90 text-xs font-semibold flex items-center justify-center gap-2">
+        {hasMore ? 'Ver todas as contas' : 'Gerenciar contas'}
+      </button>
     </div>
   );
 }

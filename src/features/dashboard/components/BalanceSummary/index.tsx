@@ -1,5 +1,6 @@
+// BalanceSummary.tsx
 import { useState } from 'react';
-import { Eye, EyeOff, TrendingUp, TrendingDown, Wallet, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
+import { Eye, EyeOff, TrendingUp, TrendingDown, Wallet, RefreshCw } from 'lucide-react';
 import { useAccounts } from '../../../accounts/hooks/useAccounts';
 import { useInvestments } from '../../../investments/hooks/useInvestments';
 import { useTransactionSummary } from '../../../transactions/hooks/useTransactionSummary';
@@ -13,7 +14,6 @@ type ActiveView = 'balance' | 'investments';
 export function BalanceSummary() {
   const [activeView, setActiveView] = useState<ActiveView>('balance');
   const [hidden, setHidden] = useState(false);
-  const [showAccounts, setShowAccounts] = useState(false);
   
   const { accounts, totalBalance, refetch, isRefetching } = useAccounts();
   const { investments, totalInvested, isLoading: isLoadingInvestments } = useInvestments();
@@ -154,31 +154,19 @@ export function BalanceSummary() {
             </div>
           )}
 
-          <button
-            onClick={() => setShowAccounts(!showAccounts)}
-            className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-white/60 hover:text-white/80 text-sm font-medium"
-          >
-            <span>{isBalance ? 'Minhas Contas' : 'Meus Investimentos'}</span>
-            {showAccounts
-              ? <ChevronUp size={15} />
-              : <ChevronDown size={15} />
-            }
-          </button>
-
-          {showAccounts && (
-            <section>
-              {isBalance
-                ? <AccountList accounts={accounts} />
-                : <InvestmentList investments={investments} />
-              }
-            </section>
-          )}
+          <div className="w-full mt-4 bg-white/5 border-2 border-dashed border-white/10 rounded-2xl h-64 flex flex-col items-center justify-center text-white/30">
+            <p className="text-sm">Área reservada para o Gráfico de Entradas x Saídas e Heatmap</p>
+          </div>
         </div>
 
         <div className={rightColumn}>
           <CategoryExpenseList />
+          {isBalance ? (
+            <AccountList accounts={accounts} isHidden={hidden} />
+          ) : (
+            <InvestmentList investments={investments} />
+          )}
         </div>
-
       </div>
     </div>
   );
