@@ -1,21 +1,27 @@
-import { useState, useEffect } from 'react';
-import { getAccounts, type Account } from '../services/accountsService';
+// src/features/accounts/hooks/useAccounts.ts
+import { useQuery } from '@tanstack/react-query';
+import { getAccounts } from '../services/accountsService';
 
 export function useAccounts() {
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    getAccounts()
-      .then((data) => {
-        console.log("DADOS QUE CHEGARAM DA API:", data); 
-        setAccounts(data);
-      })
-      .catch((error) => console.error("Erro ao buscar contas:", error))
-      .finally(() => setIsLoading(false));
-  }, []);
+  const { 
+    data: accounts = [], // Se for undefined, inicia como array vazio
+    isLoading, 
+    isRefetching, // True quando estiver atualizando em background ou via botão
+    refetch 
+  } = useQuery({
+    queryKey: ['accounts'], // Chave única para o cache
+    queryFn: getAccounts,
+    refetchInterval: 30000, // Aqui está o Polling automático: atualiza a cada 30 segundos!
+    staleTime: 10000, // Os dados ficam "frescos" por 10s antes de precisar buscar de novo ao trocar de tela
+  });
 
   const totalBalance = accounts.reduce((acc, account) => acc + Number(account.balance), 0);
 
-  return { accounts, totalBalance, isLoading };
+  return { 
+    accounts, 
+    totalBalance, 
+    isLoading, 
+    isRefetching, 
+    refetch 
+  };
 }

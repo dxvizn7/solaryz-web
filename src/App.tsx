@@ -10,11 +10,7 @@ import { Onboarding } from './features/onboarding/pages/Onboarding';
 function Dashboard() {
   return (
     <Layout>
-      <div className="flex flex-col gap-6 items-start">
-        <div className="flex gap-6 items-start">
-          <BalanceSummary />
-        </div>
-      </div>
+      <BalanceSummary />
     </Layout>
   );
 }

@@ -1,19 +1,21 @@
+// BalanceSummary.tsx
 import { useState } from 'react';
-import { Eye, EyeOff, TrendingUp, TrendingDown, Wallet, ChevronDown, ChevronUp } from 'lucide-react';
+import { Eye, EyeOff, TrendingUp, TrendingDown, Wallet, RefreshCw } from 'lucide-react';
 import { useAccounts } from '../../../accounts/hooks/useAccounts';
 import { useInvestments } from '../../../investments/hooks/useInvestments';
 import { useTransactionSummary } from '../../../transactions/hooks/useTransactionSummary';
 import { AccountList } from '../../../accounts/components/AccountList';
 import { InvestmentList } from '../../../investments/components/InvestmentList';
 import { CategoryExpenseList } from '../../../categories/components/CategoryExpenseList';
+import { mainContainer, leftColumn, rightColumn } from './styles';
 
 type ActiveView = 'balance' | 'investments';
 
 export function BalanceSummary() {
   const [activeView, setActiveView] = useState<ActiveView>('balance');
   const [hidden, setHidden] = useState(false);
-  const [showAccounts, setShowAccounts] = useState(false);
-  const { accounts, totalBalance } = useAccounts();
+  
+  const { accounts, totalBalance, refetch, isRefetching } = useAccounts();
   const { investments, totalInvested, isLoading: isLoadingInvestments } = useInvestments();
   const { summary } = useTransactionSummary();
 
@@ -24,7 +26,6 @@ export function BalanceSummary() {
 
   return (
     <div className="flex flex-col gap-6 mt-6 w-full">
-      {/* Toggle */}
       <div className="flex gap-2">
         <button
           onClick={() => setActiveView('balance')}
@@ -50,13 +51,8 @@ export function BalanceSummary() {
         </button>
       </div>
 
-      {/* Layout principal: card + categorias lado a lado */}
-      <div className="flex gap-6 items-start w-full">
-
-        {/* Coluna esquerda */}
-        <div className="flex flex-col gap-4 min-w-[320px] max-w-[380px]">
-
-          {/* Card principal */}
+      <div className={mainContainer}>
+        <div className={leftColumn}>
           {isBalance ? (
             <div className="relative rounded-2xl overflow-hidden w-full">
               <div className="bg-gradient-to-br from-[#F2A416] to-[#E85D04] p-6 relative">
@@ -65,12 +61,24 @@ export function BalanceSummary() {
 
                 <div className="flex items-center justify-between mb-2 relative z-10">
                   <span className="text-white/80 text-sm font-medium">Saldo Total</span>
-                  <button
-                    onClick={() => setHidden(!hidden)}
-                    className="text-white/70 hover:text-white transition-colors"
-                  >
-                    {hidden ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
+                  
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => refetch()}
+                      disabled={isRefetching}
+                      className={`text-white/70 hover:text-white transition-all ${isRefetching ? 'animate-spin opacity-50' : ''}`}
+                      title="Atualizar saldo"
+                    >
+                      <RefreshCw size={16} />
+                    </button>
+
+                    <button
+                      onClick={() => setHidden(!hidden)}
+                      className="text-white/70 hover:text-white transition-colors"
+                    >
+                      {hidden ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="relative z-10 mb-4">
@@ -146,34 +154,19 @@ export function BalanceSummary() {
             </div>
           )}
 
-          {/* Botão mostrar/ocultar contas */}
-          <button
-            onClick={() => setShowAccounts(!showAccounts)}
-            className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-white/60 hover:text-white/80 text-sm font-medium"
-          >
-            <span>{isBalance ? 'Minhas Contas' : 'Meus Investimentos'}</span>
-            {showAccounts
-              ? <ChevronUp size={15} />
-              : <ChevronDown size={15} />
-            }
-          </button>
+          <div className="w-full mt-4 bg-white/5 border-2 border-dashed border-white/10 rounded-2xl h-64 flex flex-col items-center justify-center text-white/30">
+            <p className="text-sm">Área reservada para o Gráfico de Entradas x Saídas e Heatmap</p>
+          </div>
+        </div>
 
-          {/* Lista colapsável */}
-          {showAccounts && (
-            <section>
-              {isBalance
-                ? <AccountList accounts={accounts} />
-                : <InvestmentList investments={investments} />
-              }
-            </section>
+        <div className={rightColumn}>
+          <CategoryExpenseList />
+          {isBalance ? (
+            <AccountList accounts={accounts} isHidden={hidden} />
+          ) : (
+            <InvestmentList investments={investments} />
           )}
         </div>
-
-        {/* Coluna direita — gastos por categoria */}
-        <div className="flex-1 min-w-0">
-          <CategoryExpenseList />
-        </div>
-
       </div>
     </div>
   );
