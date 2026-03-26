@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import type { AllocationPoint } from '../../types/analytics';
 import { formatCurrencyBRL } from '../../utils/formatters';
@@ -8,7 +9,19 @@ type Props = {
   allocation: AllocationPoint[];
 };
 
-export function InvestmentAllocationChart({ allocation }: Props) {
+const TOOLTIP_CONTENT_STYLE = {
+  background: '#10131f',
+  border: '1px solid rgba(255,255,255,0.1)',
+  borderRadius: 12,
+};
+
+function formatTooltip(_: any, __: any, payload: any) {
+  const point = payload?.payload as AllocationPoint | undefined;
+  if (!point) return '';
+  return `${point.percentage.toFixed(2)}% (${formatCurrencyBRL(point.amount)})`;
+}
+
+export const InvestmentAllocationChart = memo(function InvestmentAllocationChart({ allocation }: Props) {
   if (allocation.length === 0) {
     return (
       <div className="bg-white/5 border border-white/10 rounded-2xl p-5 h-[300px] flex items-center justify-center text-white/40 text-sm">
@@ -30,22 +43,15 @@ export function InvestmentAllocationChart({ allocation }: Props) {
               innerRadius={48}
               outerRadius={78}
               paddingAngle={2}
+              isAnimationActive={false}
             >
               {allocation.map((item, index) => (
                 <Cell key={item.type} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
             <Tooltip
-              contentStyle={{
-                background: '#10131f',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 12,
-              }}
-              formatter={(_, __, payload) => {
-                const point = payload?.payload as AllocationPoint | undefined;
-                if (!point) return '';
-                return `${point.percentage.toFixed(2)}% (${formatCurrencyBRL(point.amount)})`;
-              }}
+              contentStyle={TOOLTIP_CONTENT_STYLE}
+              formatter={formatTooltip}
             />
           </PieChart>
         </ResponsiveContainer>
@@ -67,4 +73,4 @@ export function InvestmentAllocationChart({ allocation }: Props) {
       </div>
     </div>
   );
-}
+});
