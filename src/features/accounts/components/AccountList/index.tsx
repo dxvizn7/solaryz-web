@@ -11,7 +11,7 @@ export function AccountList({ accounts, isHidden = false }: Props) {
   const hasMore = accounts.length > 3;
 
   return (
-    <div className="bg-[#1a1a2e] rounded-2xl p-5 w-full mt-6 border border-white/5">
+    <div className="bg-[#18181b] rounded-2xl p-5 w-full mt-6 border border-white/5">
       <h2 className="text-white/80 text-sm font-medium mb-4">Minhas Contas</h2>
       
       <div className="flex flex-col">

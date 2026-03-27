@@ -106,7 +106,7 @@ export function CategoryExpenseList({ onManageBudgets }: Props) {
   );
 
   return (
-    <div className="bg-[#1e1e1e] rounded-2xl p-5 w-full h-full flex flex-col">
+    <div className="bg-[#18181b] rounded-2xl p-5 w-full h-full flex flex-col border border-white/5">
       {/* Header */}
       <div className="flex items-center justify-between mb-1">
         <h2 className="text-white font-semibold text-base">Despesas do Mês</h2>
