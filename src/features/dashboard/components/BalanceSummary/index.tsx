@@ -8,6 +8,8 @@ import { AccountList } from '../../../accounts/components/AccountList';
 import { InvestmentList } from '../../../investments/components/InvestmentList';
 import { InvestmentsAnalyticsPanel } from '../../../investments/components/InvestmentsAnalyticsPanel';
 import { CategoryExpenseList } from '../../../categories/components/CategoryExpenseList';
+import { MonthlyCashFlowChart } from '../MonthlyCashFlowChart';
+import { TransactionHeatmap } from '../TransactionHeatmap';
 import { mainContainer, leftColumn, rightColumn } from './styles';
 
 type ActiveView = 'balance' | 'investments';
@@ -156,8 +158,12 @@ export function BalanceSummary() {
           )}
 
           {isBalance ? (
-            <div className="w-full mt-4 bg-white/5 border-2 border-dashed border-white/10 rounded-2xl h-64 flex flex-col items-center justify-center text-white/30">
-              <p className="text-sm">Área reservada para o Gráfico de Entradas x Saídas e Heatmap</p>
+            <div className="flex flex-col gap-6 w-full mt-4">
+              <MonthlyCashFlowChart />
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <TransactionHeatmap type="expense" />
+                <TransactionHeatmap type="income" />
+              </div>
             </div>
           ) : (
             <InvestmentsAnalyticsPanel />
