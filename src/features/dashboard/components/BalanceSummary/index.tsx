@@ -6,6 +6,7 @@ import { useInvestments } from '../../../investments/hooks/useInvestments';
 import { useTransactionSummary } from '../../../transactions/hooks/useTransactionSummary';
 import { AccountList } from '../../../accounts/components/AccountList';
 import { InvestmentList } from '../../../investments/components/InvestmentList';
+import { InvestmentsAnalyticsPanel } from '../../../investments/components/InvestmentsAnalyticsPanel';
 import { CategoryExpenseList } from '../../../categories/components/CategoryExpenseList';
 import { mainContainer, leftColumn, rightColumn } from './styles';
 
@@ -154,9 +155,13 @@ export function BalanceSummary() {
             </div>
           )}
 
-          <div className="w-full mt-4 bg-white/5 border-2 border-dashed border-white/10 rounded-2xl h-64 flex flex-col items-center justify-center text-white/30">
-            <p className="text-sm">Área reservada para o Gráfico de Entradas x Saídas e Heatmap</p>
-          </div>
+          {isBalance ? (
+            <div className="w-full mt-4 bg-white/5 border-2 border-dashed border-white/10 rounded-2xl h-64 flex flex-col items-center justify-center text-white/30">
+              <p className="text-sm">Área reservada para o Gráfico de Entradas x Saídas e Heatmap</p>
+            </div>
+          ) : (
+            <InvestmentsAnalyticsPanel />
+          )}
         </div>
 
         <div className={rightColumn}>
