@@ -1,5 +1,16 @@
 export type AlertLevel = 'none' | 'warning' | 'critical';
 
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  icon: string;
+  color: string;
+  is_default: boolean;
+  is_active: boolean;
+  updated_at: string | null;
+}
+
 export interface CategoryExpense {
   category_id: string;
   name: string;

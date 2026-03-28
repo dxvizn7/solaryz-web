@@ -4,17 +4,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { api } from '../../../config/api';
 import { useNavigate } from 'react-router-dom';
 
-// 1. O ZOD DITA AS REGRAS (Agora sem o confirmPassword)
+// 1. Zod alinhado com o Laravel (mínimo de 8 caracteres)
 const registerSchema = z.object({
   name: z.string().min(3, 'O nome precisa ter pelo menos 3 letras'),
   email: z.string().email('Digite um e-mail válido, Davi!'),
-  password: z.string().min(6, 'A senha precisa ter pelo menos 6 caracteres'),
+  password: z.string().min(8, 'A senha precisa ter pelo menos 8 caracteres'), // Correção aqui!
 });
 
-// 2. A TIPAGEM AUTOMÁTICA
 export type RegisterData = z.infer<typeof registerSchema>;
 
-// 3. O SEU HOOK (O Motor)
 export function useRegister() {
   const navigate = useNavigate();
   const { 
@@ -25,16 +23,20 @@ export function useRegister() {
     resolver: zodResolver(registerSchema)
   });
 
-  // 4. A AÇÃO FINAL
-  const onSubmitForm = (data: RegisterData) => {
+  // 2. Transformando a função em assíncrona (async/await)
+  const onSubmitForm = async (data: RegisterData) => {
     try {
+      // Agora o React espera a resposta do Laravel antes de navegar
+      await api.post('register', data); 
       
-      api.post('/register', data);
-
+      alert("Conta criada com sucesso!");
       navigate('/login');
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Erro ao registrar:", error);
-      alert("Não foi possível criar a conta. Verifique os dados.");
+      
+      // Capturando a mensagem exata de erro que o Laravel enviou (o 422)
+      const backendMessage = error.response?.data?.message || "Não foi possível criar a conta.";
+      alert(`Ops: ${backendMessage}`);
     }
   };
 

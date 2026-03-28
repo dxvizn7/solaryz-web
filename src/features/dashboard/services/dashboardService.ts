@@ -26,11 +26,11 @@ export interface MonthlyCashFlowResponse {
 }
 
 export async function getHeatmap(): Promise<HeatmapResponse> {
-  const response = await api.get('/transactions/heatmap');
+  const response = await api.get('transactions/heatmap');
   return response.data;
 }
 
 export async function getMonthlyCashFlow(): Promise<MonthlyCashFlowResponse> {
-  const response = await api.get('/transactions/monthly-cashflow');
+  const response = await api.get('transactions/monthly-cashflow');
   return response.data;
 }

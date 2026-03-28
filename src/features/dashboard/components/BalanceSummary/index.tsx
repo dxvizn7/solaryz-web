@@ -86,7 +86,14 @@ export function BalanceSummary() {
 
                 <div className="relative z-10 mb-4">
                   <span className="text-white text-4xl font-bold tracking-tight">
-                    {hidden ? 'R$ ••••••' : formatCurrency(totalBalance)}
+                    {hidden 
+                      ? 'R$ ••••••' 
+                      : formatCurrency(
+                          totalBalance > 0 
+                            ? totalBalance 
+                            : (summary.total ?? (summary.income - summary.expense)) || 0
+                        )
+                    }
                   </span>
                 </div>
 

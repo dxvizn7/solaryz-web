@@ -10,6 +10,6 @@ export interface Account {
 }
 
 export async function getAccounts(): Promise<Account[]> {
-  const response = await api.get('/accounts');
+  const response = await api.get('accounts');
   return response.data;
 }
