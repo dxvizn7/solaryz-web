@@ -1,56 +1,86 @@
-import { Home, ArrowRightLeft, Target, Settings } from 'lucide-react';
+import { Home, ArrowRightLeft, Target, Settings, Tag, Wallet, BarChart2 } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import LogoIconeBorda from '../../assets/logo-borda-s.svg';
 import LetreiroSolaryz from '../../assets/letreiro-solaryz.svg';
 
+const navItems = [
+  { to: '/dashboard', label: 'Dashboard', icon: Home },
+  { to: '/transactions', label: 'Transações', icon: ArrowRightLeft },
+  { to: '/goals', label: 'Metas', icon: Target },
+];
+
+const managementItems = [
+  { to: '/categories', label: 'Categorias', icon: Tag },
+  { to: '/accounts', label: 'Contas', icon: Wallet },
+  { to: '/investments', label: 'Investimentos', icon: BarChart2 },
+];
+
 export function Sidebar() {
+  const location = useLocation();
+
+  function isActive(path: string) {
+    return location.pathname === path || location.pathname.startsWith(path + '/');
+  }
+
+  function navClass(path: string) {
+    return `flex items-center gap-4 px-3 py-3 rounded-xl transition-colors overflow-hidden shrink-0 ${
+      isActive(path)
+        ? 'bg-[#F2910A]/10 text-[#F2910A]'
+        : 'text-gray-400 hover:bg-white/5 hover:text-solar-orange'
+    }`;
+  }
+
   return (
     <aside className="w-20 hover:w-64 transition-all duration-300 ease-in-out bg-[#2C2D34] min-h-screen flex flex-col text-white group overflow-hidden shrink-0 shadow-2xl relative z-50">
       <div className="flex items-center justify-center h-20 w-full relative px-4">
-        
-        <img 
-          src={LogoIconeBorda} 
-          alt="SolaryZ" 
-          className="w-10 h-10 transition-all duration-300 group-hover:hidden block" 
+        <img
+          src={LogoIconeBorda}
+          alt="SolaryZ"
+          className="w-10 h-10 transition-all duration-300 group-hover:hidden block"
         />
-        <img 
-          src={LetreiroSolaryz} 
-          alt="SolaryZ" 
-          className="h-9 max-w-none transition-all duration-300 hidden group-hover:block" 
+        <img
+          src={LetreiroSolaryz}
+          alt="SolaryZ"
+          className="h-9 max-w-none transition-all duration-300 hidden group-hover:block"
         />
       </div>
 
-      {/* Navegação */}
-      <nav className="flex-1 px-3 flex flex-col gap-2 mt-4">
-        <a href="#" className="flex items-center gap-4 px-3 py-3 bg-[#F2910A]/10 text-[#F2910A] rounded-xl transition-colors overflow-hidden shrink-0">
-          <Home size={24} className="shrink-0" />
-          <span className="font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-            Dashboard
-          </span>
-        </a>
-        
-        <a href="#" className="flex items-center gap-4 px-3 py-3 text-gray-400 rounded-xl transition-colors overflow-hidden shrink-0 hover:bg-white/5 hover:text-solar-orange">
-          <ArrowRightLeft size={24} className="shrink-0" />
-          <span className="font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-            Transações
-          </span>
-        </a>
+      {/* Navegação principal */}
+      <nav className="flex-1 px-3 flex flex-col gap-1 mt-4">
+        {navItems.map(({ to, label, icon: Icon }) => (
+          <Link key={to} to={to} className={navClass(to)}>
+            <Icon size={24} className="shrink-0" />
+            <span className="font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+              {label}
+            </span>
+          </Link>
+        ))}
 
-        <a href="#" className="flex items-center gap-4 px-3 py-3 text-gray-400 rounded-xl transition-colors overflow-hidden shrink-0 hover:bg-white/5 hover:text-solar-orange">
-          <Target size={24} className="shrink-0" />
-          <span className="font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-            Metas
+        {/* Separador Gestão */}
+        <div className="mt-4 mb-1 px-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <span className="text-white/20 text-[10px] font-semibold uppercase tracking-widest whitespace-nowrap">
+            Gestão
           </span>
-        </a>
+        </div>
+
+        {managementItems.map(({ to, label, icon: Icon }) => (
+          <Link key={to} to={to} className={navClass(to)}>
+            <Icon size={24} className="shrink-0" />
+            <span className="font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+              {label}
+            </span>
+          </Link>
+        ))}
       </nav>
 
       {/* Footer */}
       <div className="p-3 mb-4">
-        <a href="#" className="flex items-center gap-4 px-3 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors overflow-hidden shrink-0">
+        <Link to="/settings" className={navClass('/settings')}>
           <Settings size={24} className="shrink-0" />
           <span className="font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
             Configurações
           </span>
-        </a>
+        </Link>
       </div>
     </aside>
   );

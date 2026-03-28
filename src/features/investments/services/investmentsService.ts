@@ -17,11 +17,11 @@ export interface Investment {
 }
 
 export async function getInvestments(): Promise<Investment[]> {
-  const response = await api.get('/investments');
+  const response = await api.get('investments');
   return response.data;
 }
 
 export async function getInvestmentsTotal(): Promise<number> {
-  const response = await api.get('/investments/total');
+  const response = await api.get('investments/total');
   return response.data.total;
 }

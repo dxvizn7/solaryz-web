@@ -24,14 +24,19 @@ function getColor(volume: number, maxVolume: number, type: HeatmapType) {
   const ratio = volume / maxVolume;
   
   if (type === 'income') {
-    if (ratio < 0.25) return '#14532d'; // dark green
-    if (ratio < 0.6) return '#16a34a';  // medium green
-    return '#22c55e';                   // light/vibrant green
+    // #EFD510 is the target base color (lightest)
+    if (ratio < 0.2) return '#3d360d'; // level 1
+    if (ratio < 0.4) return '#7a6a1a'; // level 2
+    if (ratio < 0.7) return '#b79e27'; // level 3
+    if (ratio < 0.9) return '#efd510'; // level 4
+    return '#f4df5d';                   // level 5 (lightest)
   } else {
-    // Expense colors based on user provided image (red accents)
-    if (ratio < 0.25) return '#7f1d1d'; // dark red
-    if (ratio < 0.6) return '#dc2626';  // medium red
-    return '#ef4444';                   // bright red
+    // #E94822 is the target base color (lightest)
+    if (ratio < 0.2) return '#3b1208'; // level 1
+    if (ratio < 0.4) return '#762411'; // level 2
+    if (ratio < 0.7) return '#b13619'; // level 3
+    if (ratio < 0.9) return '#e94822'; // level 4
+    return '#ee6c4e';                   // level 5 (lightest)
   }
 }
 
@@ -114,7 +119,7 @@ export function TransactionHeatmap({ type }: Props) {
   if (isLoading) {
     return (
       <div className="bg-[#18181b] border border-white/5 rounded-2xl p-6 h-[240px] flex items-center justify-center">
-        <div className={`w-6 h-6 border-2 border-t-transparent rounded-full animate-spin ${type === 'income' ? 'border-[#22c55e]' : 'border-[#ef4444]'}`} />
+        <div className={`w-6 h-6 border-2 border-t-transparent rounded-full animate-spin ${type === 'income' ? 'border-[#EFD510]' : 'border-[#E94822]'}`} />
       </div>
     );
   }
@@ -124,7 +129,7 @@ export function TransactionHeatmap({ type }: Props) {
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
           {/* A small angled graph icon mockup */}
-          <div className={`w-4 h-4 rounded-sm flex items-center justify-center ${type === 'income' ? 'bg-[#22c55e]/20 text-[#22c55e]' : 'bg-[#ef4444]/20 text-[#ef4444]'}`}>
+          <div className={`w-4 h-4 rounded-sm flex items-center justify-center ${type === 'income' ? 'bg-[#EFD510]/20 text-[#EFD510]' : 'bg-[#E94822]/20 text-[#E94822]'}`}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-3 h-3">
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
             </svg>
@@ -196,9 +201,10 @@ export function TransactionHeatmap({ type }: Props) {
         <span>{legendLabelMin}</span>
         <div className="flex gap-[3px]">
           <div className="w-[10px] h-[10px] rounded-[2px] bg-[#222326]" />
-          <div className={`w-[10px] h-[10px] rounded-[2px] ${type === 'income' ? 'bg-[#14532d]' : 'bg-[#7f1d1d]'}`} />
-          <div className={`w-[10px] h-[10px] rounded-[2px] ${type === 'income' ? 'bg-[#16a34a]' : 'bg-[#dc2626]'}`} />
-          <div className={`w-[10px] h-[10px] rounded-[2px] ${type === 'income' ? 'bg-[#22c55e]' : 'bg-[#ef4444]'}`} />
+          <div className={`w-[10px] h-[10px] rounded-[2px] ${type === 'income' ? 'bg-[#3d360d]' : 'bg-[#3b1208]'}`} />
+          <div className={`w-[10px] h-[10px] rounded-[2px] ${type === 'income' ? 'bg-[#7a6a1a]' : 'bg-[#762411]'}`} />
+          <div className={`w-[10px] h-[10px] rounded-[2px] ${type === 'income' ? 'bg-[#b79e27]' : 'bg-[#b13619]'}`} />
+          <div className={`w-[10px] h-[10px] rounded-[2px] ${type === 'income' ? 'bg-[#efd510]' : 'bg-[#e94822]'}`} />
         </div>
         <span>{legendLabelMax}</span>
       </div>
@@ -216,7 +222,7 @@ export function TransactionHeatmap({ type }: Props) {
               {hoveredCell.data.count} {hoveredCell.data.count === 1 ? 'transação' : 'transações'}
             </p>
             {hoveredCell.data.volume > 0 && (
-              <p className={`font-medium text-xs text-left mt-0.5 ${type === 'income' ? 'text-[#22c55e]' : 'text-[#ef4444]'}`}>
+              <p className={`font-medium text-xs text-left mt-0.5 ${type === 'income' ? 'text-[#EFD510]' : 'text-[#E94822]'}`}>
                 {type === 'income' ? 'Recebido: ' : 'Gasto: '}{formatCurrencyBRL(hoveredCell.data.volume)}
               </p>
             )}

@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { BalanceSummary } from './features/dashboard/components/BalanceSummary';
 import { LoginForm } from './features/auth/components/Login';
 import { RegisterForm } from './features/auth/components/Register';
+import { CategoryManagement } from './features/categories/components/CategoryManagement';
 import type { JSX } from 'react';
 import { Onboarding } from './features/onboarding/pages/Onboarding';
 
@@ -15,22 +16,37 @@ function Dashboard() {
   );
 }
 
-function RequireConnection({ children }: { children: JSX.Element }) {
-  const { isAuthenticated, user } = useAuth();
+function CategoriesPage() {
+  return (
+    <Layout>
+      <CategoryManagement />
+    </Layout>
+  );
+}
+
+function PlaceholderPage({ title }: { title: string }) {
+  return (
+    <Layout>
+      <div className="flex flex-col gap-4">
+        <h1 className="text-white font-semibold text-xl">{title}</h1>
+        <p className="text-white/40 text-sm">Esta página está em desenvolvimento.</p>
+      </div>
+    </Layout>
+  );
+}
+
+function RequireAuth({ children }: { children: JSX.Element }) {
+  const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
-  }
-
-  if (user && !user.has_connected_account) {
-    return <Navigate to="/onboarding" replace />;
   }
 
   return children;
 }
 
 function AppRoutes() {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <Routes>
@@ -40,20 +56,35 @@ function AppRoutes() {
       <Route 
         path="/onboarding" 
         element={
-          isAuthenticated && user && !user.has_connected_account 
-            ? <Onboarding /> 
-            : <Navigate to="/dashboard" replace />
+          <RequireAuth>
+            <Onboarding />
+          </RequireAuth>
         } 
       />
 
       <Route 
         path="/dashboard" 
         element={
-          <RequireConnection>
+          <RequireAuth>
             <Dashboard />
-          </RequireConnection>
+          </RequireAuth>
         } 
       />
+
+      <Route
+        path="/categories"
+        element={
+          <RequireAuth>
+            <CategoriesPage />
+          </RequireAuth>
+        }
+      />
+
+      <Route path="/transactions" element={<RequireAuth><PlaceholderPage title="Transações" /></RequireAuth>} />
+      <Route path="/goals" element={<RequireAuth><PlaceholderPage title="Metas" /></RequireAuth>} />
+      <Route path="/accounts" element={<RequireAuth><PlaceholderPage title="Contas" /></RequireAuth>} />
+      <Route path="/investments" element={<RequireAuth><PlaceholderPage title="Investimentos" /></RequireAuth>} />
+      <Route path="/settings" element={<RequireAuth><PlaceholderPage title="Configurações" /></RequireAuth>} />
 
       <Route 
         path="/" 

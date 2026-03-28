@@ -50,11 +50,11 @@ export function MonthlyCashFlowChart() {
           <h3 className="text-white font-semibold text-lg">Histórico de Caixa</h3>
           <div className="flex gap-4 mt-2">
             <div className="flex items-center gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#22c55e]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#EFD510]" />
               <span className="text-white/60 text-xs font-medium">Receitas</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#F2A416]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#E94822]" />
               <span className="text-white/60 text-xs font-medium">Despesas</span>
             </div>
           </div>
@@ -67,12 +67,12 @@ export function MonthlyCashFlowChart() {
           <AreaChart data={data} margin={CHART_MARGIN}>
             <defs>
               <linearGradient id="colorEntradas" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.15} />
-                <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                <stop offset="5%" stopColor="#EFD510" stopOpacity={0.15} />
+                <stop offset="95%" stopColor="#EFD510" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="colorSaidas" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#F2A416" stopOpacity={0.15} />
-                <stop offset="95%" stopColor="#F2A416" stopOpacity={0} />
+                <stop offset="5%" stopColor="#E94822" stopOpacity={0.15} />
+                <stop offset="95%" stopColor="#E94822" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
@@ -106,16 +106,16 @@ export function MonthlyCashFlowChart() {
                       <div className="flex flex-col gap-1.5">
                         <div className="flex justify-between items-center gap-4 text-sm">
                           <span className="text-white/80">Receitas:</span>
-                          <span className="text-[#22c55e] font-medium">{formatCurrencyBRL(data.income)}</span>
+                          <span className="text-[#EFD510] font-medium">{formatCurrencyBRL(data.income)}</span>
                         </div>
                         <div className="flex justify-between items-center gap-4 text-sm">
                           <span className="text-white/80">Despesas:</span>
-                          <span className="text-[#F2A416] font-medium">{formatCurrencyBRL(data.expense)}</span>
+                          <span className="text-[#E94822] font-medium">{formatCurrencyBRL(data.expense)}</span>
                         </div>
                         <div className="w-full h-px bg-white/10 my-0.5" />
                         <div className="flex justify-between items-center gap-4 text-sm mt-0.5">
                           <span className="text-white font-medium">Saldo:</span>
-                          <span className={`font-semibold ${data.balance >= 0 ? 'text-[#22c55e]' : 'text-[#ef4444]'}`}>
+                          <span className={`font-semibold ${data.balance >= 0 ? 'text-[#EFD510]' : 'text-[#E94822]'}`}>
                             {data.balance >= 0 ? '+' : ''}{formatCurrencyBRL(data.balance)}
                           </span>
                         </div>
@@ -129,20 +129,20 @@ export function MonthlyCashFlowChart() {
             <Area 
               type="monotone" 
               dataKey="income" 
-              stroke="#22c55e" 
+              stroke="#EFD510" 
               strokeWidth={2}
               fillOpacity={1} 
               fill="url(#colorEntradas)" 
-              activeDot={{ r: 4, fill: '#22c55e', stroke: '#18181b', strokeWidth: 2 }}
+              activeDot={{ r: 4, fill: '#EFD510', stroke: '#18181b', strokeWidth: 2 }}
             />
             <Area 
               type="monotone" 
               dataKey="expense" 
-              stroke="#F2A416" 
+              stroke="#E94822" 
               strokeWidth={2}
               fillOpacity={1} 
               fill="url(#colorSaidas)" 
-              activeDot={{ r: 4, fill: '#F2A416', stroke: '#18181b', strokeWidth: 2 }}
+              activeDot={{ r: 4, fill: '#E94822', stroke: '#18181b', strokeWidth: 2 }}
             />
           </AreaChart>
         </ResponsiveContainer>
