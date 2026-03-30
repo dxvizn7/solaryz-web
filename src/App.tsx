@@ -7,6 +7,7 @@ import { RegisterForm } from './features/auth/components/Register';
 import { CategoryManagement } from './features/categories/components/CategoryManagement';
 import type { JSX } from 'react';
 import { Onboarding } from './features/onboarding/pages/Onboarding';
+import { Profile } from './features/auth/pages/Profile';
 
 function Dashboard() {
   return (
@@ -85,6 +86,7 @@ function AppRoutes() {
       <Route path="/accounts" element={<RequireAuth><PlaceholderPage title="Contas" /></RequireAuth>} />
       <Route path="/investments" element={<RequireAuth><PlaceholderPage title="Investimentos" /></RequireAuth>} />
       <Route path="/settings" element={<RequireAuth><PlaceholderPage title="Configurações" /></RequireAuth>} />
+      <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
 
       <Route 
         path="/" 
