@@ -16,6 +16,7 @@ interface AuthContextData {
   isAuthenticated: boolean;
   user: User | null;
   login: (data: LoginData) => Promise<void>;
+  loginWithGoogle: (googleToken: string) => Promise<void>;
   logout: () => void;
   updateUser: (userData: User) => void;
 }
@@ -50,6 +51,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const loginWithGoogle = async (googleToken: string) => {
+    const response = await api.post('auth/google', { token: googleToken });
+    
+    const token = response.data.access_token;
+    const userData = response.data.user; 
+
+    if (token && userData) {
+      localStorage.setItem('@SolaryZ:token', token);
+      setIsAuthenticated(true);
+      localStorage.setItem('@SolaryZ:user', JSON.stringify(userData));
+      setUser(userData);
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('@SolaryZ:token');
     localStorage.removeItem('@SolaryZ:user');
@@ -57,14 +72,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
-  // 3. Função para atualizar os dados do usuário logado (muito útil pós-Pluggy)
   const updateUser = (userData: User) => {
     localStorage.setItem('@SolaryZ:user', JSON.stringify(userData));
     setUser(userData);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, loginWithGoogle, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
