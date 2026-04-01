@@ -8,6 +8,7 @@ import { CategoryManagement } from './features/categories/components/CategoryMan
 import type { JSX } from 'react';
 import { Onboarding } from './features/onboarding/pages/Onboarding';
 import { Profile } from './features/auth/pages/Profile';
+import { LandingPage } from './features/auth/pages/LandingPage';
 
 function Dashboard() {
   return (
@@ -88,9 +89,16 @@ function AppRoutes() {
       <Route path="/settings" element={<RequireAuth><PlaceholderPage title="Configurações" /></RequireAuth>} />
       <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
 
+      {/* <-- Rota raiz modificada aqui --> */}
       <Route 
         path="/" 
-        element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} 
+        element={
+          isAuthenticated ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <LandingPage />
+          )
+        } 
       />
     </Routes>
   );

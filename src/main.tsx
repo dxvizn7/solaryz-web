@@ -5,6 +5,9 @@ import './index.css'
 import App from './App.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
+import { NotificationProvider } from './contexts/NotificationContext'
+import { NotificationContainer } from './components/SolaryzNotification/NotificationContainer'
+
 const queryClient = new QueryClient()
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
@@ -13,7 +16,10 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <GoogleOAuthProvider clientId={googleClientId}>
       <QueryClientProvider client={queryClient}>
-        <App />
+        <NotificationProvider>
+          <App />
+          <NotificationContainer />
+        </NotificationProvider>
       </QueryClientProvider>
     </GoogleOAuthProvider>
   </StrictMode>,
