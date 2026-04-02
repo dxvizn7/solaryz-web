@@ -9,6 +9,7 @@ import type { JSX } from 'react';
 import { Onboarding } from './features/onboarding/pages/Onboarding';
 import { Profile } from './features/auth/pages/Profile';
 import { LandingPage } from './features/auth/pages/LandingPage';
+import { CreditCardsPage } from './features/creditCards/pages/CreditCardsPage';
 
 function Dashboard() {
   return (
@@ -80,6 +81,15 @@ function AppRoutes() {
             <CategoriesPage />
           </RequireAuth>
         }
+      />
+
+      <Route 
+        path="/credit-cards" 
+        element={
+          <RequireAuth>
+            <CreditCardsPage />
+          </RequireAuth>
+        } 
       />
 
       <Route path="/transactions" element={<RequireAuth><PlaceholderPage title="Transações" /></RequireAuth>} />
