@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { api } from '../../../../config/api';
-import { Eye, EyeOff, TrendingUp, TrendingDown, Wallet, RefreshCw, Upload } from 'lucide-react';
+import { Eye, EyeOff, TrendingUp, TrendingDown, Wallet, RefreshCw, Upload, ChevronDown, CreditCard as CreditCardIcon, Landmark } from 'lucide-react';
 import { useAccounts } from '../../../accounts/hooks/useAccounts';
 import { useInvestments } from '../../../investments/hooks/useInvestments';
 import { useTransactionSummary } from '../../../transactions/hooks/useTransactionSummary';
@@ -27,6 +27,32 @@ export function BalanceSummary() {
   const [isUploading, setIsUploading] = useState(false);
   const [creditCards, setCreditCards] = useState<any[]>([]);
   const [importDestination, setImportDestination] = useState<string>('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const getSelectedDestinationText = () => {
+    if (!importDestination) return '🤖 Destino Automático';
+    const [type, id] = importDestination.split('-');
+    if (type === 'account') {
+      const acc = accounts.find(a => a.id.toString() === id);
+      return acc ? acc.name : 'Conta Desconhecida';
+    }
+    if (type === 'credit_card') {
+      const card = creditCards.find(c => c.id.toString() === id);
+      return card ? `${card.name} (Final ${card.account_ending ?? '***'})` : 'Cartão Desconhecido';
+    }
+    return '🤖 Destino Automático';
+  };
 
   useEffect(() => {
     creditCardService.getCreditCards().then(setCreditCards).catch(console.error);
@@ -107,25 +133,84 @@ export function BalanceSummary() {
         />
 
         <div className="flex items-center gap-3">
-          <select 
-            value={importDestination}
-            onChange={(e) => setImportDestination(e.target.value)}
-            className="bg-[#1a1a2e] border border-white/10 text-white text-sm rounded-full focus:ring-solar-orange focus:border-solar-orange block px-4 py-2 transition-colors disabled:opacity-50 appearance-none shadow-md cursor-pointer hover:bg-[#23233b]"
-            disabled={isUploading}
-            title="Selecione o destino caso queira forçar a importação, caso contrário, deixe Automático."
-          >
-            <option value="">🤖 Destino Automático</option>
-            <optgroup label="Contas (Débito/Transferências)">
-              {accounts.map(acc => (
-                <option key={`acc_${acc.id}`} value={`account-${acc.id}`}>{acc.name}</option>
-              ))}
-            </optgroup>
-            <optgroup label="Cartões de Crédito (Fatura)">
-              {creditCards.map(card => (
-                <option key={`card_${card.id}`} value={`credit_card-${card.id}`}>{card.name} (Final {card.account_ending ?? '***'})</option>
-              ))}
-            </optgroup>
-          </select>
+          {/* Dropdown Customizado de Destino */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => !isUploading && setIsDropdownOpen(!isDropdownOpen)}
+              disabled={isUploading}
+              className="flex items-center justify-between gap-3 bg-[#1a1a2e]/80 backdrop-blur-md border border-white/10 hover:border-solar-orange/50 text-white text-sm rounded-full px-5 py-2.5 transition-all duration-300 disabled:opacity-50 shadow-lg group min-w-[240px]"
+              title="Selecione o destino caso queira forçar a importação, caso contrário, deixe Automático."
+            >
+              <span className="truncate font-medium text-white/90">{getSelectedDestinationText()}</span>
+              <ChevronDown size={16} className={`text-solar-orange transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isDropdownOpen && (
+              <div className="absolute top-full z-50 right-0 mt-2 w-72 bg-[#121212]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/80 overflow-hidden text-sm origin-top-right animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="max-h-80 overflow-y-auto custom-scrollbar p-2">
+                  {/* Opção Automática */}
+                  <div 
+                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 ${importDestination === '' ? 'bg-solar-orange/10 text-solar-orange border border-solar-orange/20' : 'text-white/80 hover:bg-white/5 hover:text-white border border-transparent'}`}
+                    onClick={() => { setImportDestination(''); setIsDropdownOpen(false); }}
+                  >
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-white/10 shadow-inner">🤖</div>
+                    <span className="font-semibold text-sm">Destino Automático</span>
+                  </div>
+
+                  {/* Grupo Contas */}
+                  {accounts.length > 0 && (
+                    <div className="mt-4">
+                      <div className="px-3 pb-2 text-[10px] font-bold text-white/30 uppercase tracking-[0.15em]">Contas (Débito)</div>
+                      <div className="flex flex-col gap-1">
+                        {accounts.map(acc => (
+                          <div
+                            key={`acc_${acc.id}`}
+                            className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-200 ${importDestination === `account-${acc.id}` ? 'bg-solar-orange/10 text-solar-orange border border-solar-orange/20' : 'text-white/70 hover:bg-white/5 hover:text-white border border-transparent'}`}
+                            onClick={() => { setImportDestination(`account-${acc.id}`); setIsDropdownOpen(false); }}
+                          >
+                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-black/20 shadow-inner">
+                              <Landmark size={14} className={importDestination === `account-${acc.id}` ? 'text-solar-orange' : 'text-gray-400'} />
+                            </div>
+                            <span className="truncate flex-1 font-medium">{acc.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Grupo Cartões */}
+                  {creditCards.length > 0 && (
+                    <div className="mt-4 mb-2">
+                      <div className="px-3 pb-2 text-[10px] font-bold text-white/30 uppercase tracking-[0.15em]">Cartões de Crédito</div>
+                      <div className="flex flex-col gap-1">
+                        {creditCards.map(card => (
+                          <div
+                            key={`card_${card.id}`}
+                            className={`flex items-center gap-3 p-2.5 rounded-xl cursor-pointer transition-all duration-200 ${importDestination === `credit_card-${card.id}` ? 'bg-solar-orange/10 text-solar-orange border border-solar-orange/20' : 'text-white/70 hover:bg-white/5 hover:text-white border border-transparent'}`}
+                            onClick={() => { setImportDestination(`credit_card-${card.id}`); setIsDropdownOpen(false); }}
+                          >
+                            <div 
+                              className="flex items-center justify-center w-8 h-[22px] rounded-md shadow-md border border-white/20 relative overflow-hidden shrink-0"
+                              style={{ backgroundColor: card.color || '#333' }}
+                            >
+                              <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-white/10 mix-blend-overlay"></div>
+                               <CreditCardIcon size={12} className="text-white relative z-10 opacity-90 drop-shadow-md" />
+                            </div>
+                            <div className="flex flex-col overflow-hidden">
+                              <span className="truncate font-medium text-sm leading-tight">{card.name}</span>
+                              <span className="text-[10px] opacity-70 font-mono tracking-widest mt-0.5" style={{ color: importDestination === `credit_card-${card.id}` ? '#E85D04' : '#9ca3af' }}>
+                                FINAL {card.account_ending ?? '***'}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           <button 
             onClick={() => fileInputRef.current?.click()}
