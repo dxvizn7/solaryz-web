@@ -1,9 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../../config/api';
-import { Eye, EyeOff, TrendingUp, TrendingDown, Wallet, RefreshCw, Upload, ChevronDown, CreditCard as CreditCardIcon, Landmark } from 'lucide-react';
+import { Eye, EyeOff, TrendingUp, TrendingDown, Wallet, RefreshCw, Upload, ChevronDown, CreditCard as CreditCardIcon, Landmark, Info } from 'lucide-react';
 import { useAccounts } from '../../../accounts/hooks/useAccounts';
 import { useInvestments } from '../../../investments/hooks/useInvestments';
 import { useTransactionSummary } from '../../../transactions/hooks/useTransactionSummary';
+import { useNotification } from '../../../../contexts/NotificationContext';
 import { AccountList } from '../../../accounts/components/AccountList';
 import { InvestmentList } from '../../../investments/components/InvestmentList';
 import { InvestmentsAnalyticsPanel } from '../../../investments/components/InvestmentsAnalyticsPanel';
@@ -21,10 +23,16 @@ export function BalanceSummary() {
   const { accounts, totalBalance, refetch, isRefetching } = useAccounts();
   const { investments, totalInvested, isLoading: isLoadingInvestments } = useInvestments();
   const { summary } = useTransactionSummary();
+  const { addNotification } = useNotification();
+  const queryClient = useQueryClient();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [creditCards, setCreditCards] = useState<any[]>([]);
+  // Extrai os cartões diretamente das contas já carregadas
+  const creditCards = useMemo(
+    () => accounts.flatMap(acc => acc.credit_cards ?? []),
+    [accounts]
+  );
   const [importDestination, setImportDestination] = useState<string>('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -111,13 +119,20 @@ export function BalanceSummary() {
                 headers: { 'Content-Type': 'multipart/form-data' }
               });
 
-              alert(`Sucesso! ${data.message} ${data.transactions_found ? `(${data.transactions_found} transações)` : ''}`);
-              window.location.reload(); // Recarrega a página inteira para atualizar gráficos, categorias e heatmap
+              addNotification({
+                type: 'success',
+                message: `Sucesso! ${data.message} ${data.transactions_found ? `(${data.transactions_found} transações encontradas)` : ''}`
+              });
+              // Invalida todos os caches relevantes sem recarregar a página
+              await queryClient.invalidateQueries({ queryKey: ['accounts'] });
+              await queryClient.invalidateQueries({ queryKey: ['transactionSummary'] });
+              await queryClient.invalidateQueries({ queryKey: ['categoryExpenses'] });
+              await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
             } catch (err: any) {
               if (err.response?.status === 422) {
-                alert(`⚠️ ${err.response.data.message}`);
+                addNotification({ type: 'warning', message: err.response.data.message });
               } else {
-                alert('Ocorreu um erro ao processar o extrato global.');
+                addNotification({ type: 'error', message: 'Ocorreu um erro ao processar o extrato global.' });
               }
             } finally {
               setIsUploading(false);
@@ -141,6 +156,12 @@ export function BalanceSummary() {
 
             {isDropdownOpen && (
               <div className="absolute top-full z-50 right-0 mt-2 w-72 bg-[#121212]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/80 overflow-hidden text-sm origin-top-right animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="p-3 bg-blue-500/10 border-b border-blue-500/20 flex items-start gap-2">
+                  <Info size={16} className="text-blue-400 shrink-0 mt-0.5" />
+                  <p className="text-xs text-blue-200/80 leading-tight">
+                    A importação atualizará o saldo a partir da data do arquivo, substituindo o Saldo Inicial.
+                  </p>
+                </div>
                 <div className="max-h-80 overflow-y-auto custom-scrollbar p-2">
                   {/* Opção Automática */}
                   <div

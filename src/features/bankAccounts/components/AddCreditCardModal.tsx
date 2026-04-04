@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, CreditCard, Calendar, PaintBucket, Hash } from 'lucide-react';
 import { bankAccountsService } from '../services/bankAccountsService';
 import type { CreditCard as ICreditCard } from '../types/bankAccount';
+import { useNotification } from '../../../contexts/NotificationContext';
 
 interface Props {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export function AddCreditCardModal({ isOpen, onClose, onSuccess, bankAccountId }: Props) {
+  const { addNotification } = useNotification();
   const [formData, setFormData] = useState({
     name: '',
     limit: '',
@@ -42,6 +44,7 @@ export function AddCreditCardModal({ isOpen, onClose, onSuccess, bankAccountId }
       };
 
       const newCard = await bankAccountsService.createCreditCard(payload);
+      addNotification({ type: 'success', message: 'Cartão de crédito criado com sucesso!' });
       onSuccess(newCard);
       onClose();
       
@@ -49,7 +52,7 @@ export function AddCreditCardModal({ isOpen, onClose, onSuccess, bankAccountId }
         name: '', limit: '', closing_day: '', due_day: '', account_ending: '', color: '#8A05BE'
       });
     } catch (err: any) {
-      console.error(err);
+      addNotification({ type: 'error', message: err?.response?.data?.message || 'Erro ao criar cartão. Verifique os dados.' });
       setError(err?.response?.data?.message || 'Erro ao criar cartão. Verifique os dados.');
     } finally {
       setIsLoading(false);

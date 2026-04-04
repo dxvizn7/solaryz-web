@@ -5,9 +5,11 @@ import { api } from '../../../config/api';
 import { User, Mail, Lock, Camera, Trash2, Save, AlertCircle, X, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import Cropper from 'react-easy-crop';
 import getCroppedImg from '../utils/cropImage';
+import { useNotification } from '../../../contexts/NotificationContext';
 
 export function Profile() {
   const { user, updateUser } = useAuth();
+  const { addNotification } = useNotification();
   const [name, setName] = useState(user?.name || '');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -35,10 +37,9 @@ export function Profile() {
     try {
       const response = await api.put('user/profile', { name });
       updateUser(response.data);
-      alert('Perfil atualizado com sucesso!');
+      addNotification({ type: 'success', message: 'Perfil atualizado com sucesso!' });
     } catch (error) {
-      console.error(error);
-      alert('Erro ao atualizar perfil.');
+      addNotification({ type: 'error', message: 'Erro ao atualizar perfil.' });
     } finally {
       setIsUpdating(false);
     }
@@ -47,7 +48,7 @@ export function Profile() {
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      alert('As senhas não coincidem!');
+      addNotification({ type: 'warning', message: 'As senhas não coincidem!' });
       return;
     }
     setIsUpdating(true);
@@ -56,13 +57,12 @@ export function Profile() {
         current_password: currentPassword,
         new_password: newPassword,
       });
-      alert('Senha alterada com sucesso!');
+      addNotification({ type: 'success', message: 'Senha alterada com sucesso!' });
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
-      console.error(error);
-      alert('Erro ao alterar senha. Verifique a senha atual.');
+      addNotification({ type: 'error', message: 'Erro ao alterar senha. Verifique a senha atual.' });
     } finally {
       setIsUpdating(false);
     }
@@ -101,12 +101,12 @@ export function Profile() {
       updateUser(response.data);
       setShowCropper(false);
       setImage(null);
+      addNotification({ type: 'success', message: 'Foto de perfil atualizada!' });
     } catch (error: any) {
-      console.error(error);
       const message = error.response?.status === 404 
         ? 'Erro: Rota "user/avatar" não encontrada no backend. Por favor, verifique se o endpoint está correto.'
         : 'Erro ao enviar foto.';
-      alert(message);
+      addNotification({ type: 'error', message });
     } finally {
       setIsUpdating(false);
     }
@@ -119,11 +119,10 @@ export function Profile() {
     setIsDeleting(true);
     try {
       await api.delete('user/account');
-      alert('Conta deletada com sucesso.');
+      addNotification({ type: 'success', message: 'Conta deletada com sucesso.' });
       window.location.href = '/login';
     } catch (error) {
-      console.error(error);
-      alert('Erro ao deletar conta.');
+      addNotification({ type: 'error', message: 'Erro ao deletar conta.' });
     } finally {
       setIsDeleting(false);
     }

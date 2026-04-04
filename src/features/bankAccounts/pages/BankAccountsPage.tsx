@@ -6,8 +6,10 @@ import { AddBankAccountModal } from '../components/AddBankAccountModal';
 import { BankAccountCard } from '../components/BankAccountCard';
 import { PlanLimitBadge } from '../components/PlanLimitBadge';
 import { Layout } from '../../../components/Layout';
+import { useNotification } from '../../../contexts/NotificationContext';
 
 export function BankAccountsPage() {
+  const { addNotification } = useNotification();
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
   const [planInfo, setPlanInfo] = useState<PlanInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +25,7 @@ export function BankAccountsPage() {
       setAccounts(fetchedAccounts);
       setPlanInfo(fetchedPlan);
     } catch (error) {
-      console.error("Erro ao carregar dados:", error);
+      addNotification({ type: 'error', message: 'Erro ao carregar dados das contas.' });
     } finally {
       setIsLoading(false);
     }
@@ -37,10 +39,10 @@ export function BankAccountsPage() {
     if (!window.confirm("Certeza que deseja excluir esta conta e todos os seus cartões?")) return;
     try {
       await bankAccountsService.deleteAccount(id);
+      addNotification({ type: 'success', message: 'Conta excluída com sucesso.' });
       fetchData();
     } catch (error) {
-      console.error("Erro ao deletar conta", error);
-      alert("Falha ao deletar a conta.");
+      addNotification({ type: 'error', message: 'Falha ao deletar a conta.' });
     }
   };
 
@@ -51,7 +53,7 @@ export function BankAccountsPage() {
     const isAtLimit = usage.used >= usage.limit && !planInfo?.features?.unlimited_accounts;
     
     if (isAtLimit) {
-      alert("Você atingiu o limite de contas do seu plano (Satélite). Faça o upgrade para criar mais contas.");
+      addNotification({ type: 'warning', message: 'Você atingiu o limite de contas do seu plano. Faça o upgrade para criar mais contas.' });
       return;
     }
 

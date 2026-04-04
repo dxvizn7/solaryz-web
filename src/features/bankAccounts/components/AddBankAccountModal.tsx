@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, Wallet, Hash, Activity } from 'lucide-react';
 import { bankAccountsService } from '../services/bankAccountsService';
 import type { BankAccount, CreateBankAccountDTO } from '../types/bankAccount';
+import { useNotification } from '../../../contexts/NotificationContext';
 
 interface Props {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function AddBankAccountModal({ isOpen, onClose, onSuccess }: Props) {
+  const { addNotification } = useNotification();
   const [formData, setFormData] = useState<CreateBankAccountDTO>({
     name: '',
     type: 'checking',
@@ -34,6 +36,7 @@ export function AddBankAccountModal({ isOpen, onClose, onSuccess }: Props) {
       };
 
       const newAccount = await bankAccountsService.createAccount(payload);
+      addNotification({ type: 'success', message: 'Conta bancária criada com sucesso!' });
       onSuccess(newAccount);
       onClose();
       
@@ -41,7 +44,7 @@ export function AddBankAccountModal({ isOpen, onClose, onSuccess }: Props) {
         name: '', type: 'checking', bank_identifier: '', initial_balance: 0
       });
     } catch (err: any) {
-      console.error(err);
+      addNotification({ type: 'error', message: err?.response?.data?.message || 'Erro ao criar conta. Verifique os dados.' });
       setError(err?.response?.data?.message || 'Erro ao criar conta. Verifique os dados.');
     } finally {
       setIsLoading(false);

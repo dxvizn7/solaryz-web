@@ -28,7 +28,6 @@ export function LoginForm() {
         });
         navigate('/dashboard');
       } catch (error) {
-        console.error("Erro no login com Google:", error);
         addNotification({
           type: 'error',
           message: 'Não foi possível estabelecer conexão com o Google.'

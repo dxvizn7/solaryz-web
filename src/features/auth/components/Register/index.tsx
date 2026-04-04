@@ -28,7 +28,6 @@ export function RegisterForm() {
         });
         navigate('/dashboard');
       } catch (error) {
-        console.error("Erro no registro com Google:", error);
         addNotification({
           type: 'error',
           message: 'Ops! Não foi possível preparar o seu lançamento com o Google.'

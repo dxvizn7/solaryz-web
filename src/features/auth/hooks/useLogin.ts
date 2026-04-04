@@ -31,7 +31,6 @@ export function useLogin() {
       });
       navigate('/dashboard'); 
     } catch (error) {
-      console.error("❌ Erro ao logar:", error);
       addNotification({
         type: 'error',
         message: 'Ops! E-mail ou senha incorretos. Verifique suas credenciais.'

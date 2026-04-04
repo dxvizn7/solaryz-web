@@ -47,8 +47,6 @@ export function useRegister() {
       
       navigate('/login');
     } catch (error: any) {
-      console.error("❌ Erro ao registrar:", error);
-      
       const backendMessage = error.response?.data?.message || "Não foi possível preparar o lançamento da sua conta.";
       
       addNotification({

@@ -24,6 +24,7 @@ export function AccountList({ accounts, isHidden = false }: Props) {
             bankLogo={account.bank_logo} 
             type={account.type} 
             isHidden={isHidden} 
+            creditCards={account.credit_cards}
           />
         ))}
       </div>

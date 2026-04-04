@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Plus, Lock, Upload, Hash, Wallet, MoreVertical, WalletCards } from 'lucide-react';
 import type { BankAccount, PlanInfo, CreditCard } from '../types/bankAccount';
 import { AddCreditCardModal } from './AddCreditCardModal';
+import { useNotification } from '../../../contexts/NotificationContext';
 
 interface Props {
   account: BankAccount;
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export function BankAccountCard({ account, planInfo, onCardAdded, onDeleteAccount }: Props) {
+  const { addNotification } = useNotification();
   const [isAddCardModalOpen, setIsAddCardModalOpen] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
 
@@ -19,12 +21,12 @@ export function BankAccountCard({ account, planInfo, onCardAdded, onDeleteAccoun
 
   const handleImportOFX = (card: CreditCard) => {
     if (!planInfo.features.import_ofx) {
-      alert("A importação de arquivos OFX está disponível apenas a partir do plano Solar. Faça o upgrade para desbloquear!");
+      addNotification({ type: 'warning', message: 'A importação de arquivos OFX está disponível apenas a partir do plano Solar. Faça o upgrade para desbloquear!' });
       return;
     }
     
     // OFX upload logic would be connected here (e.g., hidden file input)
-    alert(`Importação OFX para ${card.name} abrindo...`);
+    addNotification({ type: 'info', message: `Importação OFX para ${card.name} abrindo...` });
   };
 
   const getAccountTypeLabel = (type: string) => {
@@ -82,7 +84,11 @@ export function BankAccountCard({ account, planInfo, onCardAdded, onDeleteAccoun
         </div>
         <div className="text-right pr-6">
           <div className="text-sm font-medium text-white/40 mb-1">Saldo em Conta</div>
-          <div className="text-xl font-bold text-white tracking-tight">R$ {account.current_balance || account.initial_balance}</div>
+          <div className="text-xl font-bold text-white tracking-tight">
+            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
+              Number(account.current_balance ?? account.initial_balance ?? 0)
+            )}
+          </div>
         </div>
       </div>
 
@@ -150,7 +156,7 @@ export function BankAccountCard({ account, planInfo, onCardAdded, onDeleteAccoun
       {/* Footer Add Card */}
       <div className="p-4 border-t border-white/5 bg-black/20 flex justify-center">
         <button 
-          onClick={() => canAddCard ? setIsAddCardModalOpen(true) : alert("Limite de cartões do plano atingido. Faça o upgrade!")}
+          onClick={() => canAddCard ? setIsAddCardModalOpen(true) : addNotification({ type: 'warning', message: 'Limite de cartões do plano atingido. Faça o upgrade!' })}
           className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-all ${
             canAddCard 
               ? 'text-white bg-white/5 hover:bg-[#F2910A] hover:shadow-lg hover:shadow-[#F2910A]/20 hover:-translate-y-0.5' 
