@@ -1,4 +1,4 @@
-import { Home, ArrowRightLeft, Target, Settings, Tag, Wallet, BarChart2, CreditCard } from 'lucide-react';
+import { Home, ArrowRightLeft, Target, Settings, Tag, Wallet, BarChart2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import LogoIconeBorda from '../../assets/logo-borda-s.svg';
 import LetreiroSolaryz from '../../assets/letreiro-solaryz.svg';
@@ -10,9 +10,8 @@ const navItems = [
 ];
 
 const managementItems = [
-  { to: '/credit-cards', label: 'Cartões', icon: CreditCard },
   { to: '/categories', label: 'Categorias', icon: Tag },
-  { to: '/accounts', label: 'Contas', icon: Wallet },
+  { to: '/bank-accounts', label: 'Contas', icon: Wallet },
   { to: '/investments', label: 'Investimentos', icon: BarChart2 },
 ];
 

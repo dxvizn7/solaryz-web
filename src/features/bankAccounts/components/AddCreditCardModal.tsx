@@ -1,21 +1,21 @@
 import { useState } from 'react';
 import { X, CreditCard, Calendar, PaintBucket, Hash } from 'lucide-react';
-import { creditCardService } from '../services/creditCardService';
-import type { CreditCard as ICreditCard } from '../types';
+import { bankAccountsService } from '../services/bankAccountsService';
+import type { CreditCard as ICreditCard } from '../types/bankAccount';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (newCard: ICreditCard) => void;
+  bankAccountId: number;
 }
 
-export function CreateCreditCardModal({ isOpen, onClose, onSuccess }: Props) {
+export function AddCreditCardModal({ isOpen, onClose, onSuccess, bankAccountId }: Props) {
   const [formData, setFormData] = useState({
     name: '',
     limit: '',
     closing_day: '',
     due_day: '',
-    bank_identifier: 'generico', // Mock default
     account_ending: '',
     color: '#8A05BE',
   });
@@ -32,21 +32,21 @@ export function CreateCreditCardModal({ isOpen, onClose, onSuccess }: Props) {
 
     try {
       const payload = {
+        bank_account_id: bankAccountId,
         name: formData.name,
-        limit: formData.limit, // Backend aceita limit como string "5000.00"
+        limit: Number(formData.limit),
         closing_day: Number(formData.closing_day),
         due_day: Number(formData.due_day),
-        bank_identifier: formData.bank_identifier,
         account_ending: formData.account_ending,
         color: formData.color
       };
 
-      const newCard = await creditCardService.createCreditCard(payload);
+      const newCard = await bankAccountsService.createCreditCard(payload);
       onSuccess(newCard);
       onClose();
       
       setFormData({
-        name: '', limit: '', closing_day: '', due_day: '', bank_identifier: 'generico', account_ending: '', color: '#8A05BE'
+        name: '', limit: '', closing_day: '', due_day: '', account_ending: '', color: '#8A05BE'
       });
     } catch (err: any) {
       console.error(err);
@@ -69,7 +69,7 @@ export function CreateCreditCardModal({ isOpen, onClose, onSuccess }: Props) {
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-white/5 bg-white/[0.02]">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <CreditCard size={20} className="text-[#F2A416]" />
+            <CreditCard size={20} className="text-[#F2910A]" />
             Novo Cartão
           </h2>
           <button 
@@ -98,7 +98,7 @@ export function CreateCreditCardModal({ isOpen, onClose, onSuccess }: Props) {
                 placeholder="Meu Cartão Black"
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-[#121212] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#F2A416]/50 transition-all font-medium"
+                className="w-full bg-[#121212] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#F2910A]/50 transition-all font-medium"
               />
             </div>
           </div>
@@ -117,7 +117,7 @@ export function CreateCreditCardModal({ isOpen, onClose, onSuccess }: Props) {
                 placeholder="5000.00"
                 value={formData.limit}
                 onChange={e => setFormData({ ...formData, limit: e.target.value })}
-                className="w-full bg-[#121212] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#F2A416]/50 transition-all font-medium"
+                className="w-full bg-[#121212] border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#F2910A]/50 transition-all font-medium"
               />
             </div>
           </div>
@@ -136,7 +136,7 @@ export function CreateCreditCardModal({ isOpen, onClose, onSuccess }: Props) {
                   placeholder="Dia"
                   value={formData.closing_day}
                   onChange={e => setFormData({ ...formData, closing_day: e.target.value })}
-                  className="w-full bg-[#121212] border border-white/10 rounded-xl pl-9 pr-3 py-3 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#F2A416]/50 transition-all font-medium"
+                  className="w-full bg-[#121212] border border-white/10 rounded-xl pl-9 pr-3 py-3 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#F2910A]/50 transition-all font-medium"
                 />
               </div>
             </div>
@@ -153,31 +153,15 @@ export function CreateCreditCardModal({ isOpen, onClose, onSuccess }: Props) {
                   placeholder="Dia"
                   value={formData.due_day}
                   onChange={e => setFormData({ ...formData, due_day: e.target.value })}
-                  className="w-full bg-[#121212] border border-white/10 rounded-xl pl-9 pr-3 py-3 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#F2A416]/50 transition-all font-medium"
+                  className="w-full bg-[#121212] border border-white/10 rounded-xl pl-9 pr-3 py-3 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#F2910A]/50 transition-all font-medium"
                 />
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-             <div>
-              <label className="text-white/70 text-sm font-medium mb-1.5 block">Identificador</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Hash size={14} className="text-white/40" />
-                </div>
-                <input 
-                  required
-                  type="text"
-                  placeholder="ex: nubank"
-                  value={formData.bank_identifier}
-                  onChange={e => setFormData({ ...formData, bank_identifier: e.target.value })}
-                  className="w-full bg-[#121212] border border-white/10 rounded-xl pl-9 pr-3 py-3 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#F2A416]/50 transition-all font-medium"
-                />
-              </div>
-            </div>
+          <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="text-white/70 text-sm font-medium mb-1.5 block">Final do Cartão/Conta (4 digitos)</label>
+              <label className="text-white/70 text-sm font-medium mb-1.5 block">Final do Cartão (4 digitos)</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Hash size={14} className="text-white/40" />
@@ -185,10 +169,10 @@ export function CreateCreditCardModal({ isOpen, onClose, onSuccess }: Props) {
                 <input 
                   required
                   type="text"
-                  placeholder="ex: 1234 ou código longo"
+                  placeholder="ex: 1234"
                   value={formData.account_ending}
                   onChange={e => setFormData({ ...formData, account_ending: e.target.value })}
-                  className="w-full bg-[#121212] border border-white/10 rounded-xl pl-9 pr-3 py-3 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#F2A416]/50 transition-all font-medium"
+                  className="w-full bg-[#121212] border border-white/10 rounded-xl pl-9 pr-3 py-3 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#F2910A]/50 transition-all font-medium"
                 />
               </div>
             </div>
