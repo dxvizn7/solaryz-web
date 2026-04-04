@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { PluggyConnect } from 'react-pluggy-connect';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../auth/contexts/AuthContext';
+import { useNotification } from '../../../../contexts/NotificationContext';
 
 export const PluggyConnectButton = () => {
+    const { addNotification } = useNotification();
     const [token, setToken] = useState<string | null>(null);
     const { user, updateUser } = useAuth();
     const navigate = useNavigate();
@@ -21,10 +23,10 @@ export const PluggyConnectButton = () => {
             if (data.token) {
                 setToken(data.token);
             } else {
-                console.error("Token não recebido:", data);
+                addNotification({ type: 'error', message: 'Token não recebido.' });
             }
         } catch (e) {
-            console.error("Erro ao buscar connect token", e);
+            addNotification({ type: 'error', message: 'Erro ao buscar connect token.' });
         }
     };
 
@@ -51,7 +53,7 @@ export const PluggyConnectButton = () => {
                 navigate('/dashboard');
             }
         } catch (e) {
-            console.error("Erro ao salvar conta no backend", e);
+            addNotification({ type: 'error', message: 'Erro ao salvar conta no backend.' });
         } finally {
             setToken(null);
         }
@@ -74,7 +76,7 @@ export const PluggyConnectButton = () => {
                 <PluggyConnect
                     connectToken={token}
                     onSuccess={handleSuccess}
-                    onError={(error) => console.error("Erro no Widget:", error)}
+                    onError={() => addNotification({ type: 'error', message: 'Erro no Widget da Pluggy.' })}
                     onClose={() => setToken(null)}
                 />
             )}

@@ -11,7 +11,7 @@ const navItems = [
 
 const managementItems = [
   { to: '/categories', label: 'Categorias', icon: Tag },
-  { to: '/accounts', label: 'Contas', icon: Wallet },
+  { to: '/bank-accounts', label: 'Contas', icon: Wallet },
   { to: '/investments', label: 'Investimentos', icon: BarChart2 },
 ];
 

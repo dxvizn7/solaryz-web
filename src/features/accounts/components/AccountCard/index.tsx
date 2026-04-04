@@ -9,6 +9,7 @@ interface AccountCardProps {
   bankLogo?: string;
   type?: string;
   isHidden?: boolean;
+  creditCards?: any[];
 }
 
 export function AccountCard({
@@ -19,6 +20,7 @@ export function AccountCard({
   bankLogo,
   type,
   isHidden = false,
+  creditCards = [],
 }: AccountCardProps) {
   
   const formattedBalance = new Intl.NumberFormat('pt-BR', {
@@ -51,19 +53,31 @@ export function AccountCard({
   );
 
   return (
-    <div className="flex items-center justify-between py-3 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded-lg transition-colors">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0 p-1">
-          {avatar}
+    <div className="flex flex-col py-3 border-b border-white/5 last:border-0 hover:bg-white/5 px-2 rounded-lg transition-colors">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0 p-1">
+            {avatar}
+          </div>
+          <div className="flex flex-col">
+            <span className="text-white/90 text-sm font-semibold">{name}</span>
+            <span className="text-white/40 text-xs">
+              {type ? `${translateType(type)}` : currencyCode}
+            </span>
+          </div>
         </div>
-        <div className="flex flex-col">
-          <span className="text-white/90 text-sm font-semibold">{name}</span>
-          <span className="text-white/40 text-xs">
-            {type ? `${translateType(type)}` : currencyCode}
+        <span className="text-white text-sm font-bold">{balanceDisplay}</span>
+      </div>
+
+      {creditCards && creditCards.length > 0 && (
+        <div className="flex justify-end mt-1">
+          <span className="text-white/50 text-xs flex items-center gap-1 font-medium bg-black/20 px-2 py-0.5 rounded-full border border-white/5">
+            💳 Faturas: {isHidden ? 'R$ ••••' : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
+              creditCards.reduce((acc, card) => acc + (Number(card.invoice_amount || card.invoice_current || card.balance || 0)), 0)
+            )}
           </span>
         </div>
-      </div>
-      <span className="text-white text-sm font-bold">{balanceDisplay}</span>
+      )}
     </div>
   );
 }
