@@ -16,6 +16,7 @@ export interface CreditCardTransaction {
   description: string;
   amount: string; // Valores em string geralmente vêm do backend Laravel, cuidaremos no parse
   date: string;
+  type: 'DEBIT' | 'CREDIT';
   category?: {
     name: string;
     color: string;

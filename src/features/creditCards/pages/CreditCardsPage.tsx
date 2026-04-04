@@ -71,14 +71,12 @@ export function CreditCardsPage() {
         // Separa year-month
         const [year, monthNum] = selectedMonth.split('-');
 
-        // CORREÇÃO AQUI: Faltava chamar o service para popular a variável 'data'
         const data = await creditCardService.getTransactionsByInvoice(selectedCardId, monthNum, year);
 
         // Garante que setamos um array mesmo se a API devolver objeto solto/erro
         setTransactions(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Erro ao carregar transações', error);
-        // Exemplo: mockedFallback para não quebrar UI caso não tenha rota transactions implementada 100% yet
         setTransactions([]);
       } finally {
         setIsLoadingTransactions(false);
@@ -129,7 +127,6 @@ export function CreditCardsPage() {
       alert('Falha ao processar arquivo OFX.');
     } finally {
       setIsUploading(false);
-      // reset input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -138,13 +135,31 @@ export function CreditCardsPage() {
 
   const activeCard = useMemo(() => cards.find(c => c.id === selectedCardId), [cards, selectedCardId]);
 
-  // Mock do Limite Utilizado (Para a barra de progresso do cartão)
-  // Num cenário real, ou viria no objeto CreditCard da API `GET /credit-cards`, ou seria agg(transactions.amount).
+  // --------------------------------------------------------
+  // CORREÇÃO: Soma apenas débitos e subtrai os créditos 
+  // --------------------------------------------------------
   const calculateUsedLimit = (txs: CreditCardTransaction[]) => {
     if (!Array.isArray(txs)) return 0;
-    const sum = txs.reduce((acc, t) => acc + parseFloat(t.amount), 0);
-    return Math.abs(sum); // As faturas do OFX vêm negativas, o limite consumido é o valor absoluto do débito.
+    
+    const sum = txs.reduce((acc, t) => {
+      const value = parseFloat(t.amount);
+      
+      if (t.type === 'CREDIT') {
+        // Ignora o pagamento da própria fatura para não mascarar o total de gastos
+        if (t.description.toLowerCase().includes('pagamento')) {
+          return acc; 
+        }
+        // Se for um estorno normal, ele abate o valor da fatura
+        return acc - value;
+      }
+      
+      // Débitos (compras) somam
+      return acc + value;
+    }, 0);
+    
+    return Math.max(0, sum);
   };
+  
   const activeUsedLimit = useMemo(() => calculateUsedLimit(transactions), [transactions]);
 
   return (
