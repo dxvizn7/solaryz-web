@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import type { Account } from '../../services/accountsService';
 import { AccountCard } from '../AccountCard';
 
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export function AccountList({ accounts, isHidden = false }: Props) {
+  const navigate = useNavigate();
   const previewAccounts = accounts.slice(0, 3);
   const hasMore = accounts.length > 3;
 
@@ -29,9 +31,12 @@ export function AccountList({ accounts, isHidden = false }: Props) {
         ))}
       </div>
 
-      <button className="w-full mt-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-white/60 hover:text-white/90 text-xs font-semibold flex items-center justify-center gap-2">
+      <button
+        onClick={() => navigate('/bank-accounts')}
+        className="w-full mt-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-white/60 hover:text-white/90 text-xs font-semibold flex items-center justify-center gap-2"
+      >
         {hasMore ? 'Ver todas as contas' : 'Gerenciar contas'}
       </button>
     </div>
   );
-}
+}

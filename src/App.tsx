@@ -11,6 +11,7 @@ import { Profile } from './features/auth/pages/Profile';
 import { LandingPage } from './features/auth/pages/LandingPage';
 
 import { BankAccountsPage } from './features/bankAccounts/pages/BankAccountsPage';
+import { TransactionsPage } from './features/transactions/components/TransactionsPage';
 
 function Dashboard() {
   return (
@@ -93,7 +94,7 @@ function AppRoutes() {
         } 
       />
 
-      <Route path="/transactions" element={<RequireAuth><PlaceholderPage title="Transações" /></RequireAuth>} />
+      <Route path="/transactions" element={<RequireAuth><TransactionsPage /></RequireAuth>} />
       <Route path="/goals" element={<RequireAuth><PlaceholderPage title="Metas" /></RequireAuth>} />
       <Route path="/investments" element={<RequireAuth><PlaceholderPage title="Investimentos" /></RequireAuth>} />
       <Route path="/settings" element={<RequireAuth><PlaceholderPage title="Configurações" /></RequireAuth>} />
