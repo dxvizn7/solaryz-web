@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Plus, Lock, Upload, Hash, Wallet, MoreVertical, WalletCards } from 'lucide-react';
 import type { BankAccount, PlanInfo, CreditCard } from '../types/bankAccount';
 import { AddCreditCardModal } from './AddCreditCardModal';
+import { OfxImportModal } from './OfxImportModal';
 import { useNotification } from '../../../contexts/NotificationContext';
 
 interface Props {
@@ -15,18 +16,17 @@ export function BankAccountCard({ account, planInfo, onCardAdded, onDeleteAccoun
   const { addNotification } = useNotification();
   const [isAddCardModalOpen, setIsAddCardModalOpen] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+  const [ofxModalConfig, setOfxModalConfig] = useState<{ isOpen: boolean; type: 'account' | 'credit_card'; id: number }>({ isOpen: false, type: 'credit_card', id: 0 });
 
   const canAddCard = planInfo?.features?.unlimited_cards || 
                      ((planInfo?.usage?.credit_cards?.used ?? 0) < (planInfo?.usage?.credit_cards?.limit ?? 999));
 
   const handleImportOFX = (card: CreditCard) => {
     if (!planInfo.features.import_ofx) {
-      addNotification({ type: 'warning', message: 'A importação de arquivos OFX está disponível apenas a partir do plano Solar. Faça o upgrade para desbloquear!' });
+      addNotification({ type: 'warning', message: 'Faça upgrade para importar OFX' });
       return;
     }
-    
-    // OFX upload logic would be connected here (e.g., hidden file input)
-    addNotification({ type: 'info', message: `Importação OFX para ${card.name} abrindo...` });
+    setOfxModalConfig({ isOpen: true, type: 'credit_card', id: card.id });
   };
 
   const getAccountTypeLabel = (type: string) => {
@@ -177,6 +177,17 @@ export function BankAccountCard({ account, planInfo, onCardAdded, onDeleteAccoun
           onCardAdded();
         }}
         bankAccountId={account.id}
+      />
+
+      {/* OFX Import Modal */}
+      <OfxImportModal
+        isOpen={ofxModalConfig.isOpen}
+        onClose={() => setOfxModalConfig(prev => ({ ...prev, isOpen: false }))}
+        destinationType={ofxModalConfig.type}
+        destinationId={ofxModalConfig.id}
+        onSuccess={() => {
+          onCardAdded();
+        }}
       />
     </div>
   );

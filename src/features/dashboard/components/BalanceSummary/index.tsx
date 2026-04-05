@@ -274,9 +274,9 @@ export function BalanceSummary() {
                     {hidden
                       ? 'R$ ••••••'
                       : formatCurrency(
-                        totalBalance > 0
+                        totalBalance !== 0
                           ? totalBalance
-                          : (summary.total ?? (summary.income - summary.expense)) || 0
+                          : (summary.income - summary.expense)
                       )
                     }
                   </span>
